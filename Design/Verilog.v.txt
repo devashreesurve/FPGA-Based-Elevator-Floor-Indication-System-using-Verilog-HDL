@@ -1,0 +1,55 @@
+module FSM_Control (
+input clk,
+input rst,
+input up_button,
+input down_button,
+output reg led0,
+output reg led1
+);
+// Define states
+localparam IDLE_FLOOR1 = 2’b00;
+localparam MOVING_UP = 2’b01;
+localparam IDLE_FLOOR2 = 2’b10;
+localparam MOVING_DOWN = 2’b11;
+reg [1:0] current_state;
+always @(posedge clk or posedge rst)
+begin
+if (rst) begin
+current_state
+<= IDLE_FLOOR1;
+led0 <= 1’b1;
+led1 <= 1’b0;
+end else begin
+case (current_state)
+IDLE_FLOOR1: begin
+led0 <= 1’b1;
+led1 <= 1’b0;
+if (up_button)
+current_state
+<= MOVING_UP;
+end
+MOVING_UP: begin
+led0 <= 1’b0;
+led1 <= 1’b1;
+current_state
+<= IDLE_FLOOR2;
+end
+IDLE_FLOOR2: begin
+led0 <= 1’b0;
+led1 <= 1’b1;
+if (down_button)
+current_state
+<= MOVING_DOWN;
+end
+MOVING_DOWN: begin
+led0 <= 1’b1;
+led1 <= 1’b0;
+current_state
+<= IDLE_FLOOR1;
+end
+default: current_state
+<= IDLE_FLOOR1;
+endcase
+end
+end
+endmodule
